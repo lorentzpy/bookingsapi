@@ -14,6 +14,8 @@ router.post("/login", async(req, res) => {
 
     const { user, password } = req.body;
 
+    console.log(req.body);
+
     // check if user exists
     const foundUser = await User.findOne({user});
     if (!foundUser) return res.status(400).json({error: "user not found"});
