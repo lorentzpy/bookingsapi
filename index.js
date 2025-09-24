@@ -17,7 +17,7 @@ const { connectDb, disconnectDb } = require("./config/connect.js");
 
 
 app.use(cors({
-    origin: "http://localhost:3002", // front React
+    origin: "https://resplendent-jalebi-5dfb0b.netlify.app", // front React
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   }));
