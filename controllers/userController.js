@@ -85,6 +85,7 @@ exports.setPassword = async (req, res) => {
 
         if (!updatePassword) {
             res.status(400).json({message: "Password update failed"});
+            console.log("Password update failed");
             return;
         }
 
