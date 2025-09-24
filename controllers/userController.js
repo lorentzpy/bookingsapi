@@ -16,6 +16,10 @@ exports.getPrefs = async (req, res) => {
     try {
         const { id:userId } = req.params;
 
+        if (req.user.id != userId) {
+            return res.status(403).json({error: "Forbidden"});
+        }
+
         const reqPayload = {}
         reqPayload["_id"] = userId;
 
@@ -76,8 +80,6 @@ exports.setPassword = async (req, res) => {
         const hashedPassword = await bcrypt.hash(passwordBody.password, saltRounds);
 
         const passwordPayload = {"$set": {"password":hashedPassword}};
-
-        console.log(passwordPayload);
 
         const updatePassword = await User.findByIdAndUpdate(userId, passwordPayload);
 

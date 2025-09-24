@@ -19,7 +19,7 @@ router.post("/login", async(req, res) => {
     if (!foundUser) return res.status(400).json({error: "user not found"});
 
     // check if password correct
-    const valid = await bcrypt.compare(password, foundUser.password);
+    const valid = await bcrypt.compare(password, foundUser.password);    
     if (!valid) return res.status(400).json({error: "password incorrect"});
 
     // increment login_count by 1
@@ -43,8 +43,6 @@ router.post("/login", async(req, res) => {
         //{ expiresIn: '5000'}
         { expiresIn: '1h'}
     )
-
-    console.log(token);
 
     res.json({token: token});
 

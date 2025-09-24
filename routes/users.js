@@ -2,12 +2,12 @@ const express = require("express");
 const router = express.Router();
 
 const userController = require("../controllers/userController");
+const authMiddleware = require("../middleware/authMiddleware");
 
 // users
 router.get("/", userController.getUsers);
-router.get("/:id/prefs", userController.getPrefs);
-router.post("/:id/prefs", userController.updatePrefs);
-router.patch("/:id/password", userController.setPassword);
-//router.patch("/:id/password", userController.updatePassword);
+router.get("/:id/prefs", authMiddleware, userController.getPrefs);
+router.post("/:id/prefs", authMiddleware, userController.updatePrefs);
+router.patch("/:id/password", authMiddleware, userController.setPassword);
 
 module.exports = router;
