@@ -15,9 +15,16 @@ const auth = require("./middleware/authMiddleware.js");
 
 const { connectDb, disconnectDb } = require("./config/connect.js");
 
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(",");
 
 app.use(cors({
-    origin: "https://resplendent-jalebi-5dfb0b.netlify.app", // front React
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+            return callback(null, true);
+        } else {
+            callback(new Error("Not allowed by cors"));
+        }
+    },
     allowedHeaders: ["Content-Type", "Authorization"],
     methods: ["GET", "POST", "PATCH", "DELETE", "OPTIONS"],
   }));

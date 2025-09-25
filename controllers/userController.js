@@ -1,5 +1,5 @@
 const User = require("../models/User");
-const bcrypt = require("bcrypt");
+const {hashAndSetPassword, compareHashes} = require("../utils/password");
 
 exports.getUsers = async (req, res) => {
     try {
@@ -52,13 +52,47 @@ exports.updatePrefs = async (req, res) => {
     }
 }
 
-exports.setPassword = async (req, res) => {
+exports.deleteUser = async (req, res) => {
     try {
-        const saltRounds = 12;
+        const {id: userId} = req.params;
+        await User.deleteOne( {_id: userId} )
+
+        res.status(200).json({"message":"User has been deleted"});
+    }
+    catch(err) {
+        console.error("error deleting user", err);
+        res.status(500).json({error: "error deleting user"});
+    }
+}
+
+exports.createUser = async (req, res) => {
+    try {
+        const { password, ...userData } = req.body;
+
+        // append login_count
+        userData.login_count = 0;
+        const newUser = await User.create(userData);
+
+        const userId = newUser._id;
+
+        if (password) {
+            await hashAndSetPassword(userId, password);
+        }
+
+        res.status(200).json({message:"New user created"});
+    }
+    catch (err) {
+        console.error("error creating user");
+        res.status(500).json({error: "error creating user"});
+    }
+}
+
+exports.setPassword = async (req, res) => {
+    try {      
         const {id: userId} = req.params;
         const passwordBody = req.body;
 
-        // check if current password is correct
+        // check if current password is correct. Suitable only for patch (password update)
         if (req.method === "PATCH") {
             const currentPassword = passwordBody.currentPassword;
 
@@ -68,7 +102,7 @@ exports.setPassword = async (req, res) => {
             if (currentUser) {
                 const userPassword = currentUser.password;
 
-                const comparePasswords = await bcrypt.compare(currentPassword, userPassword);
+                const comparePasswords = await compareHashes(currentPassword, userPassword);
 
                 if (!comparePasswords) {
                     res.status(401).json({message:"Passwords don't match!"});
@@ -77,11 +111,9 @@ exports.setPassword = async (req, res) => {
             }
         }
 
-        const hashedPassword = await bcrypt.hash(passwordBody.password, saltRounds);
+        const newPassword = passwordBody.password;
 
-        const passwordPayload = {"$set": {"password":hashedPassword}};
-
-        const updatePassword = await User.findByIdAndUpdate(userId, passwordPayload);
+        await hashAndSetPassword(userId, newPassword)
 
         if (!updatePassword) {
             res.status(400).json({message: "Password update failed"});
