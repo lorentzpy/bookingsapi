@@ -8,7 +8,6 @@ exports.getBookings = async (req, res) => {
     try {
 
         const { month } = req.params;
-        console.log(month);
 
         const { exclude } = req.query;
 
@@ -65,7 +64,6 @@ exports.getBookings = async (req, res) => {
 
 exports.createBooking = async (req, res) => {
 
-    console.log("creating booking"); 
     const bookingPayload = req.body;
 
     bookingPayload.from = new Date(bookingPayload.from);

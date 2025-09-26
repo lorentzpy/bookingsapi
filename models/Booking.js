@@ -19,7 +19,8 @@ const bookingSchema = new Schema(
         modifiedBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
         modified: { type: Date, required: true },
         status: { type: String, required: true},
-        comment: { type: String, required: false }
+        comment: { type: String, required: false },
+        billable: { type: Boolean, default: true}
     },
     { collection: 'mgv_bookings' }
 );
