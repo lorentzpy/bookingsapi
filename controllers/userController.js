@@ -69,6 +69,17 @@ exports.createUser = async (req, res) => {
     try {
         const { password, ...userData } = req.body;
 
+        // check if user already exists
+        const user = userData.user;
+
+        const userExists = await User.exists({user: user});
+
+        if (userExists) {
+            console.log("The user already exists!");
+            res.status(409).json({message: "The user already exists"});
+            return;
+        }
+
         // append login_count
         userData.login_count = 0;
         const newUser = await User.create(userData);
